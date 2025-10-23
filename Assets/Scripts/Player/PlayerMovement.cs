@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BoxCollider2D))]
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private InputActionReference _moveAction;
@@ -12,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Vector2 _dir;
     private Vector2 _counterMovement;
+    private BoxCollider2D _boxCollider;
 
     private void Start()
     {
@@ -25,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
         _moveAction.action.canceled += OnMove;
 
         _dir = Vector2.zero;
+        _boxCollider = GetComponent<BoxCollider2D>();
     }
 
     private void OnDisable()
@@ -40,13 +44,14 @@ public class PlayerMovement : MonoBehaviour
 
         _playerAnimation.FlipSprite(_dir.x);
 
+        Debug.Log($"Move Input: {_dir}");
+
         _playerAnimation.SetWalkValue(Mathf.Clamp01(Mathf.Abs(_dir.x)));
 
     }
 
     private void FixedUpdate()
     {
-
         if (_dir != Vector2.zero)
         {
             _counterMovement.x = -_rb.linearVelocity.x * _counterMovementForce;
@@ -57,7 +62,15 @@ public class PlayerMovement : MonoBehaviour
             _rb.AddForce(speed, ForceMode2D.Impulse);
 
         }
-        else if (_rb.linearVelocity != Vector2.zero)
+        else if (_rb.linearVelocity != Vector2.zero && IsGrounded())
             _rb.linearVelocity = Vector2.zero;
+    }
+
+    private bool IsGrounded()
+    {
+        var floor = new Vector2(_boxCollider.bounds.center.x, _boxCollider.bounds.min.y - 0.01f);
+
+        RaycastHit2D hit = Physics2D.Raycast(floor, Vector2.down, 0.1f);
+        return hit.collider != null;
     }
 }
