@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerActions : MonoBehaviour
+public class PlayerAttack : MonoBehaviour
 {
     [SerializeField] private InputActionReference _attackAction;
     [SerializeField] private PlayerAnimation _playerAnimation;
@@ -24,7 +24,6 @@ public class PlayerActions : MonoBehaviour
             _playerAnimation = GetComponent<PlayerAnimation>();
 
         _attackAction.action.started += OnAttack;
-        _currentTime = _startAttackValue;
     }
 
     private void OnDisable()
@@ -34,7 +33,9 @@ public class PlayerActions : MonoBehaviour
 
     private void OnAttack(InputAction.CallbackContext context)
     {
-        if (_currentTime < 0)
+        bool isPlaying = _playerAnimation.IsPlaying("atk");
+
+        if (_currentTime <= 0 && !isPlaying)
         {
             _toDamage = Physics2D.OverlapCircleAll(_attackOrigin.position, _attackRadius, _whatIsEnemies).ToList();
             _currentTime = _startAttackValue;
@@ -54,7 +55,8 @@ public class PlayerActions : MonoBehaviour
 
     private void Update()
     {
-        _currentTime -= Time.deltaTime;
+        if (_currentTime > -_startAttackValue)
+            _currentTime -= Time.deltaTime;
     }
     private void OnDrawGizmosSelected()
     {

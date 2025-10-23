@@ -43,4 +43,18 @@ public class PlayerAnimation : MonoBehaviour
     {
         _animator.SetTrigger("hurt");
     }
+    private string GetCurrentAnimationName()
+    {
+        var info = _animator.GetCurrentAnimatorClipInfo(0);
+        var clip = info[0].clip;
+        Debug.Log(clip.name);
+        return clip.name;
+    }
+
+    public bool IsPlaying(string animationName)
+    {
+        var animName = GetCurrentAnimationName();
+
+        return animationName == animName;
+    }
 }
