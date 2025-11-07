@@ -1,10 +1,11 @@
 using System;
 using UnityEngine;
 
-public class PlayerAnimation : MonoBehaviour
+public class CharacterAnimation : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
 
+    private SpriteRenderer _spriteRenderer;
     private bool _isFacingRight = false;
 
     private void Awake()
@@ -14,6 +15,11 @@ public class PlayerAnimation : MonoBehaviour
             _animator = GetComponentInChildren<Animator>();
             if (!_animator.enabled)
                 _animator.enabled = true;
+        }
+
+        if (!TryGetComponent(out _spriteRenderer))
+        {
+            _spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         }
     }
 
@@ -56,5 +62,10 @@ public class PlayerAnimation : MonoBehaviour
         var animName = GetCurrentAnimationName();
 
         return animationName == animName;
+    }
+
+    public void TriggerDeath()
+    {
+        _animator.SetBool("isDead", true);
     }
 }

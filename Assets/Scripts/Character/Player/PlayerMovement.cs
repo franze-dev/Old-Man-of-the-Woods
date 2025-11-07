@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Rigidbody2D _rb;
     [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private float _counterMovementForce = 2f;
-    [SerializeField] private PlayerAnimation _playerAnimation;
+    [SerializeField] private CharacterAnimation _playerAnimation;
 
     private Vector2 _dir;
     private Vector2 _counterMovement;
@@ -22,7 +22,7 @@ public class PlayerMovement : MonoBehaviour
             _rb = GetComponent<Rigidbody2D>();
 
         if (_playerAnimation == null)
-            _playerAnimation = GetComponent<PlayerAnimation>();
+            _playerAnimation = GetComponent<CharacterAnimation>();
 
         _moveAction.action.started += OnMove;
         _moveAction.action.canceled += OnMove;
@@ -36,6 +36,7 @@ public class PlayerMovement : MonoBehaviour
         _moveAction.action.started -= OnMove;
         _moveAction.action.canceled -= OnMove;
     }
+
     private void OnMove(InputAction.CallbackContext context)
     {
         _dir = context.ReadValue<Vector2>();

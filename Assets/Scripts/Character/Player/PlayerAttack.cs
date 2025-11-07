@@ -1,5 +1,3 @@
-using NUnit.Framework;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -8,7 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerAttack : MonoBehaviour
 {
     [SerializeField] private InputActionReference _attackAction;
-    [SerializeField] private PlayerAnimation _playerAnimation;
+    [SerializeField] private CharacterAnimation _playerAnimation;
     [SerializeField] private float _currentTime = 0f;
     [SerializeField] private float _startAttackValue = 0.3f;
     [SerializeField] private Transform _attackOrigin;
@@ -21,7 +19,7 @@ public class PlayerAttack : MonoBehaviour
     private void Awake()
     {
         if (_playerAnimation == null)
-            _playerAnimation = GetComponent<PlayerAnimation>();
+            _playerAnimation = GetComponent<CharacterAnimation>();
 
         _attackAction.action.started += OnAttack;
     }
@@ -37,7 +35,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (_currentTime <= 0 && !isPlaying)
         {
-            _toDamage = Physics2D.OverlapCircleAll(_attackOrigin.position, _attackRadius, _whatIsEnemies).ToList();
+            //_toDamage = Physics2D.OverlapCircleAll(_attackOrigin.position, _attackRadius, _whatIsEnemies).ToList();
             _currentTime = _startAttackValue;
             _playerAnimation.TriggerAttack();
         }
@@ -45,6 +43,8 @@ public class PlayerAttack : MonoBehaviour
 
     public void Attack()
     {
+        _toDamage = Physics2D.OverlapCircleAll(_attackOrigin.position, _attackRadius, _whatIsEnemies).ToList();
+
         foreach (var enemy in _toDamage)
         {
             var enemyScript = enemy.GetComponent<Enemy>();
