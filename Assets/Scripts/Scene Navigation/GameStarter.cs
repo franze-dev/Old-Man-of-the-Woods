@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class GameStarter : MonoBehaviour
 {
-    private void Awake()
+    private void Start()
     {
-        EventProvider.Subscribe<IStartGameEvent>(StartGame);
+        StartGame();
     }
 
-    private void StartGame(IStartGameEvent juego)
+    private void StartGame()
     {
         EventTriggerer.Trigger<IActivateSceneEvent>(new ActivateMenuEvent(new MainMenuState(), false));
 

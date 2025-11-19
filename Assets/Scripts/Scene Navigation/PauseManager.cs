@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PauseManager : MonoBehaviour
 {
-    private KeyCode TeclaPausa = KeyCode.Escape;
+    [SerializeField] private InputActionReference _pauseInput;
 
     public static bool Paused { get; set; }
 
@@ -10,20 +12,22 @@ public class PauseManager : MonoBehaviour
     {
         Time.timeScale = 1f;
 
-        EventProvider.Subscribe<IPauseEvent>(Pausar);
+        _pauseInput.action.started += OnPause;
+
+        EventProvider.Subscribe<IPauseEvent>(Pause);
     }
 
-    private void Update()
+    private void OnPause(InputAction.CallbackContext context)
     {
-        if (Input.GetKeyUp(TeclaPausa))
-            EventTriggerer.Trigger<IPauseEvent>(new PauseEvent());
+        EventTriggerer.Trigger<IPauseEvent>(new PauseEvent());
     }
+
     private void OnDestroy()
     {
-        EventProvider.Subscribe<IPauseEvent>(Pausar);
+        EventProvider.Subscribe<IPauseEvent>(Pause);
     }
 
-    private void Pausar(IPauseEvent pauseEvent)
+    private void Pause(IPauseEvent pauseEvent)
     {
         ServiceProvider.TryGetService<MenuManager>(out var gestion);
 
@@ -35,7 +39,7 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = Paused ? 0f : 1f;
 
         if (Paused)
-            EventTriggerer.Trigger<IActivateSceneEvent>(new ActivateMenuEvent(new PauseMenu(), false));
+            EventTriggerer.Trigger<IActivateSceneEvent>(new ActivateMenuEvent(new PauseState(), false));
         else
             EventTriggerer.Trigger<IActivateSceneEvent>(new ActivateGameEvent(false));
     }

@@ -6,6 +6,7 @@ public class MenuManager : MonoBehaviour
     public GameObject PauseMenuObject;
     public GameObject CreditsMenuObject;
     public GameObject ExitMenuObject;
+    public GameObject LogsMenuObject;
     public GameObject BackgroundObject;
 
     public IMenuState CurrentState = null;
@@ -46,6 +47,7 @@ public class MenuManager : MonoBehaviour
         PauseMenuObject.SetActive(false);
         CreditsMenuObject.SetActive(false);
         ExitMenuObject.SetActive(false);
+        LogsMenuObject.SetActive(false);
         BackgroundObject.SetActive(false);
     }
 
@@ -61,7 +63,7 @@ public class MenuManager : MonoBehaviour
         PauseManager.Paused = false;
 
         ServiceProvider.TryGetService<SceneFlowManager>(out var manager);
-        manager.DescargarEscena(GameplaySceneData.Index);
+        manager.UnloadScene(GameplaySceneData.Index);
     }
 }
 
@@ -83,7 +85,7 @@ public class MainMenuState : IMenuState
     }
 }
 
-public class PauseMenu : IMenuState
+public class PauseState : IMenuState
 {
     public void Enter(MenuManager manager)
     {
@@ -106,5 +108,13 @@ public class ExitState : IMenuState
     public void Enter(MenuManager manager)
     {
         manager.ShowMenuObject(manager.ExitMenuObject);
+    }
+}
+
+public class LogsState : IMenuState
+{
+    public void Enter(MenuManager manager)
+    {
+        manager.ShowMenuObject(manager.LogsMenuObject);
     }
 }

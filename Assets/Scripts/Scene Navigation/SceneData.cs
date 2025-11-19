@@ -1,4 +1,4 @@
-public interface IDatosEscena
+public interface SceneData
 {
     /// <summary>
     /// Saves the index of the scene
@@ -6,14 +6,14 @@ public interface IDatosEscena
     static int Index { get; }
 }
 
-public class MenuSceneData : IDatosEscena
+public class MenuSceneData : SceneData
 {
     public static int Index => ServiceProvider.TryGetService<SceneFlowManager>(out var controller) ? 
-                               controller.Container.EscenaMenuIndice : 0;
+                               controller.Container.MenuSceneIndex : 0;
 }
 
-public class GameplaySceneData : IDatosEscena
+public class GameplaySceneData : SceneData
 {
     public static int Index => ServiceProvider.TryGetService<SceneFlowManager>(out var controller) ?
-                               controller.Container.EscenaJuegoIndice : 0;
+                               controller.Container.GameplaySceneIndex : 0;
 }

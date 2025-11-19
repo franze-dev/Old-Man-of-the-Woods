@@ -46,9 +46,9 @@ public class SceneFlowManager : MonoBehaviour
             Loader.ActivateScene(index);
     }
 
-    public IEnumerator UsarCarga(AsyncOperationHandle<GameObject> op)
+    public IEnumerator UseLoad(AsyncOperationHandle<GameObject> op)
     {
-        return Loader.UseLoad(op, Container.LoadingSceneIndex, Container.EscenaJuegoIndice);
+        return Loader.UseLoad(op, Container.LoadingSceneIndex, Container.GameplaySceneIndex);
     }
 
     public bool IsLoaded(int index)
@@ -56,12 +56,12 @@ public class SceneFlowManager : MonoBehaviour
         return Loader.IsLoaded(index);
     }
 
-    public bool EsJuego(int index)
+    public bool IsGame(int index)
     {
         return Loader.IsGameplay(index);
     }
 
-    public void DescargarEscena(int index)
+    public void UnloadScene(int index)
     {
         Loader.UnloadScene(index);
     }

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8537251be44585a41829d4532ecb1684, type: 3}
+  m_Name: SceneContainer
+  m_EditorClassIdentifier: 
+  _menuSceneIndex: 0
+  _level1SceneIndex: 1
+  _loadingSceneIndex: 2
+  _bootSceneIndex: 3
+  _menuScene: {fileID: 102900000, guid: 7235fd2675ffb5146b62fb0ff6215af4, type: 3}
+  _gameplayScene: {fileID: 102900000, guid: e2d0d9984254e364d919c4ca266a7c6f, type: 3}
+  _loadingScene: {fileID: 102900000, guid: 73f8fcde366c23c408542c6415d4fe8a, type: 3}
+  _bootScene: {fileID: 102900000, guid: ece21d38ed85b1740b05d17a7a1ff699, type: 3}

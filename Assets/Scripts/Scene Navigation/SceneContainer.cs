@@ -1,7 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "ContenerorEscenas", menuName = "ScriptableObjects/ContenedorEscenas")]
+[CreateAssetMenu(fileName = "SceneContainer", menuName = "ScriptableObjects/SceneContainer")]
 public class SceneContainer : ScriptableObject
 {
     [SerializeField] private int _menuSceneIndex;
@@ -9,10 +9,10 @@ public class SceneContainer : ScriptableObject
     [SerializeField] private int _loadingSceneIndex;
     [SerializeField] private int _bootSceneIndex;
 
-    public int EscenaMenuIndice => _menuSceneIndex;
-    public int EscenaJuegoIndice => _level1SceneIndex;
+    public int MenuSceneIndex => _menuSceneIndex;
+    public int GameplaySceneIndex => _level1SceneIndex;
     public int LoadingSceneIndex => _loadingSceneIndex;
-    public int EscenaComienzoIndice => _bootSceneIndex;
+    public int BootSceneIndex => _bootSceneIndex;
 
 #if UNITY_EDITOR
     [SerializeField] private SceneAsset _menuScene;
