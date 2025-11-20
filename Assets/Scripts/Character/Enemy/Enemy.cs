@@ -43,5 +43,14 @@ public class Enemy : MonoBehaviour
         }
 
         gameObject.SetActive(false);
+        EventTriggerer.Trigger<IEnemyDeathEvent>(new EnemyDeathEvent());
     }
+}
+
+public interface IEnemyDeathEvent : IEvent
+{
+}
+
+public class EnemyDeathEvent : IEnemyDeathEvent
+{
 }
