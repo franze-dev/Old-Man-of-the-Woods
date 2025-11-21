@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
@@ -10,9 +8,17 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private GameObject _rightSpawn;
     [SerializeField] private float _spawnCooldownMin;
     [SerializeField] private float _spawnCooldownMax;
+    [SerializeField] private int _damage = 5;
 
     private EnemySide _leftEnemies;
     private EnemySide _rightEnemies;
+
+    public int Damage => _damage;
+
+    private void Awake()
+    {
+        ServiceProvider.SetService(this);
+    }
 
     private void Start()
     {
@@ -38,85 +44,5 @@ public class EnemyManager : MonoBehaviour
 
         _leftEnemies.Activate();
         _rightEnemies.Activate();
-    }
-}
-
-public class EnemySide : MonoBehaviour
-{
-    private List<Enemy> _enemies;
-    private Vector2 _dir;
-    private float _spawnCooldownMin;
-    private float _spawnCooldownMax;
-    private bool _enabled;
-    private Vector3 _startPos;
-    private int _startCount;
-    private Transform _parent;
-    private GameObject _enemyPrefab;
-
-    public void Init(int count, Vector2 dir, Vector3 pos, Transform parent, GameObject enemyPrefab,
-                     float cooldownMin, float cooldownMax)
-    {
-        _enemies = new List<Enemy>();
-        _spawnCooldownMin = cooldownMin;
-        _spawnCooldownMax = cooldownMax;
-        _startPos = pos;
-        _startCount = count;
-        _parent = parent;
-        _enemyPrefab = enemyPrefab;
-        _dir = dir;
-        _enabled = true;
-
-        AddEnemies(count);
-    }
-
-    public void Activate()
-    {
-        StartCoroutine(SpawnEnemiesCoroutine());
-    }
-
-    private IEnumerator SpawnEnemiesCoroutine()
-    {
-        while (_enemies.Count > 0 && _enabled)
-        {
-            var secs = UnityEngine.Random.Range(_spawnCooldownMin, _spawnCooldownMax);
-            yield return new WaitForSeconds(secs);
-            SpawnEnemy();
-        }
-    }
-
-    private void SpawnEnemy()
-    {
-        foreach (var enemy in _enemies)
-        {
-            if (enemy != null && !enemy.gameObject.activeSelf)
-            {
-                enemy.gameObject.SetActive(true);
-                return;
-            }
-        }
-    }
-
-    private void Reset()
-    {
-        foreach (var enemy in _enemies)
-        {
-            enemy.transform.position = _startPos;
-            enemy.gameObject.SetActive(false);
-        }
-
-        if (_enemies.Count < _startCount)
-            AddEnemies(_startCount - _enemies.Count);
-    }
-
-    private void AddEnemies(int count)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            var enemyObj = GameObject.Instantiate(_enemyPrefab, _startPos, Quaternion.identity, _parent);
-            var enemyMovement = enemyObj.GetComponent<EnemyMovement>();
-            enemyMovement.Dir = _dir;
-            enemyObj.SetActive(false);
-            _enemies.Add(enemyObj.GetComponent<Enemy>());
-        }
     }
 }

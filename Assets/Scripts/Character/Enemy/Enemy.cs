@@ -26,12 +26,16 @@ public class Enemy : MonoBehaviour
 
     private void Die()
     {
-        _characterAnimation.TriggerDeath();
+        gameObject.SetActive(false);
+        if (CurrencyManager.Instance != null)
+            CurrencyManager.Instance.AddCoins();
+        _currentHealth = _maxHealth;
     }
 
     private IEnumerator TakeDamageRoutine(float damage)
     {
         _currentHealth -= damage;
+        _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
         _characterAnimation.TriggerHurt();
 
         yield return new WaitForSeconds(1f);
@@ -39,20 +43,10 @@ public class Enemy : MonoBehaviour
         if (_currentHealth <= 0)
         {
             _currentHealth = _maxHealth;
-            Die();
+            _characterAnimation.TriggerDeath();
             yield return new WaitForSeconds(1f);
-            gameObject.SetActive(false);
-            _currentHealth = _maxHealth;
-            EventTriggerer.Trigger<IEnemyDeathEvent>(new EnemyDeathEvent());
+            Die();
         }
 
     }
-}
-
-public interface IEnemyDeathEvent : IEvent
-{
-}
-
-public class EnemyDeathEvent : IEnemyDeathEvent
-{
 }

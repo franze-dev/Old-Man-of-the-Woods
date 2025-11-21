@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class MenuManager : MonoBehaviour
@@ -8,6 +9,7 @@ public class MenuManager : MonoBehaviour
     public GameObject ExitMenuObject;
     public GameObject LogsMenuObject;
     public GameObject BackgroundObject;
+    public GameObject LoseMenuObject;
 
     public IMenuState CurrentState = null;
     public IMenuState PreviousState = null;
@@ -15,6 +17,12 @@ public class MenuManager : MonoBehaviour
     private void Awake()
     {
         ServiceProvider.SetService(this);
+        EventProvider.Subscribe<IPlayerDeathEvent>(OnPlayerDeath);
+    }
+
+    private void OnPlayerDeath(IPlayerDeathEvent @event)
+    {
+        GoToMenu(new LoseState());
     }
 
     private void Start()
@@ -49,6 +57,7 @@ public class MenuManager : MonoBehaviour
         ExitMenuObject.SetActive(false);
         LogsMenuObject.SetActive(false);
         BackgroundObject.SetActive(false);
+        LoseMenuObject.SetActive(false);
     }
 
     public void ShowMenuObject(GameObject obj)
@@ -116,5 +125,15 @@ public class LogsState : IMenuState
     public void Enter(MenuManager manager)
     {
         manager.ShowMenuObject(manager.LogsMenuObject);
+    }
+}
+
+public class LoseState : IMenuState
+{
+    public void Enter(MenuManager manager)
+    {
+        MenuManager.ResetGame();
+
+        manager.ShowMenuObject(manager.LoseMenuObject);
     }
 }
