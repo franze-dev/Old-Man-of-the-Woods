@@ -40,10 +40,12 @@ public class Enemy : MonoBehaviour
         {
             _currentHealth = _maxHealth;
             Die();
+            yield return new WaitForSeconds(1f);
+            gameObject.SetActive(false);
+            _currentHealth = _maxHealth;
+            EventTriggerer.Trigger<IEnemyDeathEvent>(new EnemyDeathEvent());
         }
 
-        gameObject.SetActive(false);
-        EventTriggerer.Trigger<IEnemyDeathEvent>(new EnemyDeathEvent());
     }
 }
 

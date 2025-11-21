@@ -6446,6 +6446,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1741914258}
     - target: {fileID: 7118612442714360225, guid: 9f50b3436a0399c4e9b74191f33b368b, type: 3}
+      propertyPath: _damage
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7118612442714360225, guid: 9f50b3436a0399c4e9b74191f33b368b, type: 3}
       propertyPath: _currentTime
       value: 0
       objectReference: {fileID: 0}
