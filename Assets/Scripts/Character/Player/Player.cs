@@ -18,7 +18,6 @@ public class Player : MonoBehaviour
     private float _invincibilityTimer = 0.0f;
     private Coroutine _invincibilityCoroutine;
     private EnemyManager _enemyManager;
-    private bool _canRevive = false;
 
     private void Awake()
     {
@@ -54,6 +53,7 @@ public class Player : MonoBehaviour
         _currentHealth = _maxHealth;
         UpdateHealthBar();
         transform.position = _startPos;
+        _spriteRenderer.color = Color.white;
     }
 
     public void TakeDamage(int damage)
@@ -133,17 +133,7 @@ public class Player : MonoBehaviour
 
     private void Die()
     {
-        if (_canRevive)
-        {
-            _canRevive = false;
-
-            _currentHealth = Mathf.Max(1, _maxHealth / 2); // revive with half HP
-            UpdateHealthBar();
-            transform.position = _startPos;
-            return;
-        }
-        else
-            EventTriggerer.Trigger<IPlayerDeathEvent>(new PlayerDeathEvent());
+        EventTriggerer.Trigger<IPlayerDeathEvent>(new PlayerDeathEvent());
     }
 
     public void AddMaxHealth(int amount)
@@ -177,11 +167,6 @@ public class Player : MonoBehaviour
             timer += 1f;
             yield return new WaitForSeconds(1f);
         }
-    }
-
-    public void GrantRevive()
-    {
-        _canRevive = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
