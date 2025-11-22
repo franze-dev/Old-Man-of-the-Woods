@@ -16,7 +16,6 @@ public class PlayerAttack : MonoBehaviour
 
     private float _attackSpeedMultiplier = 1f;
     private float _damageMultiplier = 1f;
-    private float _radiusAdditive = 0f;
 
     private List<Collider2D> _toDamage;
 
@@ -46,7 +45,6 @@ public class PlayerAttack : MonoBehaviour
 
         if (_currentTime <= 0 && !isPlaying)
         {
-            //_toDamage = Physics2D.OverlapCircleAll(_attackOrigin.position, _attackRadius, _whatIsEnemies).ToList();
             _currentTime = cooldown;
             _playerAnimation.TriggerAttack();
         }
@@ -54,16 +52,14 @@ public class PlayerAttack : MonoBehaviour
 
     public void Attack()
     {
-        float radius = _attackRadius + _radiusAdditive;
-        _toDamage = Physics2D.OverlapCircleAll(_attackOrigin.position, radius, _whatIsEnemies).ToList();
+        float damage = _damage * _damageMultiplier;
+        _toDamage = Physics2D.OverlapCircleAll(_attackOrigin.position, _attackRadius, _whatIsEnemies).ToList();
 
         foreach (var enemy in _toDamage)
         {
             var enemyScript = enemy.GetComponent<Enemy>();
 
-            enemyScript?.TakeDamage(_damage);
-
-            Handheld.Vibrate();
+            enemyScript?.TakeDamage(damage);
         }
     }
 
@@ -89,10 +85,5 @@ public class PlayerAttack : MonoBehaviour
     public void MultiplyDamage(float multiplier)
     {
         _damageMultiplier *= multiplier;
-    }
-
-    public void AddAttackRadius(float additive)
-    {
-        _radiusAdditive += additive;
     }
 }

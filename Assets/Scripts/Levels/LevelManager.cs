@@ -116,7 +116,11 @@ public class LevelManager : MonoBehaviour
 
         _currentLevel = @event.NewLevel;
 
+#if UNITY_ANDROID
+        Handheld.Vibrate();
+
         _archievementsManager.ArchieveLevel(_currentLevel);
+#endif
 
         if (_currentLevel > _finalLevel)
         {
