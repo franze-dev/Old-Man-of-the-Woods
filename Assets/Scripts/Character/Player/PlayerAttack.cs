@@ -62,6 +62,8 @@ public class PlayerAttack : MonoBehaviour
             var enemyScript = enemy.GetComponent<Enemy>();
 
             enemyScript?.TakeDamage(_damage);
+
+            Handheld.Vibrate();
         }
     }
 

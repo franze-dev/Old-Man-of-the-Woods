@@ -15,11 +15,13 @@ public class EnemyManager : MonoBehaviour
     private EnemySide _leftEnemies;
     private EnemySide _rightEnemies;
     private float _damageMultiplier = 1f;
+    private int _baseDamage;
 
     public int Damage => _damage;
 
     private void Awake()
     {
+        _baseDamage = _damage;
         ServiceProvider.SetService(this);
         EventProvider.Subscribe<ILevelUpEvent>(OnLevelUp);
     }
@@ -35,6 +37,8 @@ public class EnemyManager : MonoBehaviour
 
         if (@event.NewLevel > 1)
             _damage += _levelDamageAdd;
+        else
+            _damage = _baseDamage;
     }
 
     private void Start()
@@ -67,12 +71,5 @@ public class EnemyManager : MonoBehaviour
     {
         _damageMultiplier *= multiplier;
         _damage = Mathf.Max(0, Mathf.RoundToInt(_damage * _damageMultiplier));
-    }
-
-    public void MultiplySpawnCooldowns(float mul)
-    {
-        _spawnCooldownMultiplier *= mul;
-        _spawnCooldownMin *= mul;
-        _spawnCooldownMax *= mul;
     }
 }

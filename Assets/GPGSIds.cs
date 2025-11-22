@@ -24,7 +24,11 @@
 
 public static class GPGSIds
 {
+        public const string leaderboard_amount_of_archievements = "CgkIpL30r4YZEAIQAg"; // <GPGSID>
         public const string achievement_firstopen = "CgkIpL30r4YZEAIQAQ"; // <GPGSID>
+        public const string achievement_level_1 = "CgkIpL30r4YZEAIQAw"; // <GPGSID>
+        public const string achievement_level_2 = "CgkIpL30r4YZEAIQBA"; // <GPGSID>
+        public const string achievement_level_3 = "CgkIpL30r4YZEAIQBQ"; // <GPGSID>
 
 }
 

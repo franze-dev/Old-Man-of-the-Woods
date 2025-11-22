@@ -1,5 +1,8 @@
 using System;
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 public class LevelManager : MonoBehaviour
 {
@@ -7,9 +10,14 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private int _finalLevel = 3;
     [SerializeField] private float _levelTimer = 60f;
     [SerializeField] GameObject _gameplayGO;
+    [SerializeField] private AssetReferenceGameObject _environmentRef;
+    [SerializeField] private Transform _environmentPos;
+    private GameObject _environmentInstance;
+
     private float _timer;
     private bool _timerStarted;
     private bool _gameplayActive = true;
+    private ArchievementsManager _archievementsManager;
 
     public bool TimerStarted => _timerStarted;
 
@@ -24,7 +32,22 @@ public class LevelManager : MonoBehaviour
         ServiceProvider.SetService(this, true);
         EventProvider.Subscribe<IDeactivateGameplayEvent>(OnDeactivateGameplay);
         EventProvider.Subscribe<IActivateGameplayEvent>(OnActivateGameplay);
+        StartCoroutine(InstanceEnvironment());
         _timerStarted = false;
+    }
+
+    private IEnumerator InstanceEnvironment()
+    {
+        var op = _environmentRef.InstantiateAsync(_environmentPos);
+
+        ServiceProvider.TryGetService<SceneFlowManager>(out var manager);
+
+        if (!manager)
+            yield return op;
+        else
+            yield return manager.UseLoad(op);
+
+        _environmentInstance = op.Result;
     }
 
     private void OnActivateGameplay(IActivateGameplayEvent @event)
@@ -50,11 +73,15 @@ public class LevelManager : MonoBehaviour
         EventProvider.Subscribe<ILevelUpEvent>(OnLevelUp);
         EventTriggerer.Trigger<ILevelUpEvent>(new LevelUpEvent(_currentLevel));
 
+        ServiceProvider.TryGetService(out _archievementsManager);
+
         _timer = _levelTimer;
     }
 
     private void OnDestroy()
     {
+        _environmentRef.ReleaseInstance(_environmentInstance);
+
         EventProvider.Unsubscribe<ILevelUpEvent>(OnLevelUp);
         EventProvider.Unsubscribe<IActivateGameplayEvent>(OnActivateGameplay);
         EventProvider.Unsubscribe<IDeactivateGameplayEvent>(OnDeactivateGameplay);
@@ -88,6 +115,8 @@ public class LevelManager : MonoBehaviour
         _timer = _levelTimer;
 
         _currentLevel = @event.NewLevel;
+
+        _archievementsManager.ArchieveLevel(_currentLevel);
 
         if (_currentLevel > _finalLevel)
         {

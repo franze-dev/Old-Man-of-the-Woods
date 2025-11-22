@@ -12,6 +12,7 @@ public class MenuManager : MonoBehaviour
     public GameObject LoseMenuObject;
     public GameObject WinMenuObject;
     public GameObject ShopMenuObject;
+    public GameObject TutorialMenuObject;
 
     public IMenuState CurrentState = null;
     public IMenuState PreviousState = null;
@@ -65,6 +66,10 @@ public class MenuManager : MonoBehaviour
 
         PreviousState = CurrentState;
         CurrentState = state;
+
+        if (PreviousState == null && CurrentState is not MainMenuState)
+            PreviousState = new MainMenuState();
+
         HideMenuObjects();
         BackgroundObject.SetActive(true);
 
@@ -82,6 +87,7 @@ public class MenuManager : MonoBehaviour
         LoseMenuObject.SetActive(false);
         WinMenuObject.SetActive(false);
         ShopMenuObject.SetActive(false);
+        TutorialMenuObject.SetActive(false);
     }
 
     public void ShowMenuObject(GameObject obj)
@@ -176,6 +182,14 @@ public class WinState : IMenuState
     {
         MenuManager.ResetGame();
         manager.ShowMenuObject(manager.WinMenuObject);
+    }
+}
+
+public class TutorialState : IMenuState
+{
+    public void Enter(MenuManager manager)
+    {
+        manager.ShowMenuObject(manager.TutorialMenuObject);
     }
 }
 

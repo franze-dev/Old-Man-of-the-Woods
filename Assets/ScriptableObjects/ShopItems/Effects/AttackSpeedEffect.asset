@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 078058998d3bfae44a79288a5a7a3a2c, type: 3}
   m_Name: AttackSpeedEffect
   m_EditorClassIdentifier: 
-  _speedMultiplier: 1.2
+  _speedMultiplier: 2

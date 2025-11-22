@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _description: Increase your damage
   _price: 80
-  _level: 3
+  _level: 2
   _effect: {fileID: 11400000, guid: 3f935a5a25ac0b34c946e831e873535a, type: 2}

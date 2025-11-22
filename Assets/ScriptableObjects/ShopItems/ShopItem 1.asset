@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _description: Increase your attack speed
   _price: 40
-  _level: 2
+  _level: 3
   _effect: {fileID: 11400000, guid: eba73ed09dfa60946bde08dd6d8750f1, type: 2}

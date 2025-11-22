@@ -40,6 +40,11 @@ public class MenuButtonsManager : MonoBehaviour
         manager.GoToMenu(previous);
     }
 
+    public void ToTutorialMenu()
+    {
+        manager.GoToMenu(new TutorialState());
+    }
+
     public void Pause()
     {
         EventTriggerer.Trigger<IPauseEvent>(new PauseEvent());
