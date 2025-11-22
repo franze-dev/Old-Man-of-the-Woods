@@ -1,0 +1,56 @@
+Singleton
+
+Donde: En CurrencyManager.cs.
+
+Cómo: La clase tiene su instancia creada y en el Awake() se
+asegura de que solo exista una. Si ya hay una, destruye el
+objeto nuevo. Este CurrencyManager se encarga de manejar las monedas del
+jugador, actualizar la UI y permitir sumar o gastar monedas desde
+cualquier otro sistema. Como es el único que existe y nunca cambia,
+todos acceden a él directo desde CurrencyManager.Instance.
+
+Problema que resuelve: Evita tener que pasar la referencia del
+CurrencyManager por todos lados o registrarla en el ServiceProvider
+(aparte es la única clase que lo necesita). Como solo hay un contador de
+monedas en todo el juego y es algo súper central, no tiene sentido
+tratarlo como un servicio intercambiable ni tener varias instancias.
+Tenerlo como singleton simplifica el acceso desde enemigos, el shop, UI,
+etc.
+
+Pool
+
+Dónde: En EnemyManager y EnemySide.
+
+Cómo: En vez de instanciar y destruir enemigos todo el tiempo, el
+sistema crea una lista de enemigos al inicio (AddEnemies) y los va
+activando/desactivando según se necesiten. Cada
+enemigo recuerda su posición inicial y cuando muere o lo manda el
+EnemyResetter, se desactiva, resetea su posición y queda listo para ser
+reutilizado. EnemySide mantiene su propia lista, manejando el cooldown
+de spawn y activando el primero que esté disponible sin tener que crear
+nuevos objetos.
+
+Problema que resuelve: Evita costos de performance por estar
+instanciando y destruyendo objetos, evitando sobrecargar el Garbage Collector.
+
+Strategy
+
+Dónde: En todas las clases derivadas de ImprovementEffect:
+AttackSpeedEffect, DamageEffect, EnemyDamageReduceEffect,
+HealthRegenEffect, MaxHealthEffect, MoveSpeedEffect, que se usan en ShopItem
+y ShopMenu.
+
+Cómo: Cada mejora del shop es un ScriptableObject que implementa la
+interfaz ImprovementEffect con un método Apply(Player player).
+Cada efecto aplica una lógica distinta. El ShopItem contiene
+una referencia a uno de estos efectos, y cuando el jugador compra un
+item, el shop simplemente llama item.Effect.Apply(player) sin saber qué
+hace ese efecto ni cómo lo hace.
+
+Problema que resuelve: Evita tener un shop gigante con ifs o switches
+para saber qué hacer cuando se compra cada mejora. Cada lógica de mejora
+está encapsulada en su propia clase, por lo que agregar nuevos ítems no
+requiere modificar el código del shop ni tocar ninguna clase existente:
+solo se crean más ScriptableObjects. El shop delega completamente la
+lógica del efecto al objeto estrategia correspondiente, haciendo el
+sistema extensible y fácil de mantener.
