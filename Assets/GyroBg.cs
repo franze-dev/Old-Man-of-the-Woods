@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 
 public class GyroBg : MonoBehaviour
 {
+#if UNITY_ANDROID
     [Header("Movement Settings")]
     [SerializeField] private float _sensitivity = 0.2f;
     [SerializeField] private float _shiftModifier = 1f;
@@ -40,4 +41,5 @@ public class GyroBg : MonoBehaviour
         pos.x = Mathf.Clamp(pos.x, _minX, _maxX);
         transform.position = pos;
     }
+#endif
 }
