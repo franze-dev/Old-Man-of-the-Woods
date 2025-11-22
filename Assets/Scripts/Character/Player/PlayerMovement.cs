@@ -15,6 +15,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 _dir;
     private Vector2 _counterMovement;
     private BoxCollider2D _boxCollider;
+    private float _moveSpeedMultiplier = 1f;
 
     private void Start()
     {
@@ -24,15 +25,20 @@ public class PlayerMovement : MonoBehaviour
         if (_playerAnimation == null)
             _playerAnimation = GetComponent<CharacterAnimation>();
 
-        _moveAction.action.started += OnMove;
-        _moveAction.action.canceled += OnMove;
-
         _dir = Vector2.zero;
         _boxCollider = GetComponent<BoxCollider2D>();
     }
 
+    private void OnEnable()
+    {
+        _dir = Vector2.zero;
+        _moveAction.action.started += OnMove;
+        _moveAction.action.canceled += OnMove;
+    }
+
     private void OnDisable()
     {
+        _dir = Vector2.zero;
         _moveAction.action.started -= OnMove;
         _moveAction.action.canceled -= OnMove;
     }
@@ -55,10 +61,17 @@ public class PlayerMovement : MonoBehaviour
     {
         if (_dir != Vector2.zero)
         {
+            if (!IsGrounded())
+            {
+                var linearVel = _rb.linearVelocity;
+                linearVel.x = 0;
+                _rb.linearVelocity = linearVel;
+            }
+
             _counterMovement.x = -_rb.linearVelocity.x * _counterMovementForce;
             _counterMovement.y = -_rb.linearVelocity.y * _counterMovementForce;
 
-            var speed = _moveSpeed * Time.fixedDeltaTime * _dir + _counterMovement;
+            var speed = (_moveSpeed * _moveSpeedMultiplier) * Time.fixedDeltaTime * _dir + _counterMovement;
 
             _rb.AddForce(speed, ForceMode2D.Impulse);
 
@@ -73,5 +86,10 @@ public class PlayerMovement : MonoBehaviour
 
         RaycastHit2D hit = Physics2D.Raycast(floor, Vector2.down, 0.1f);
         return hit.collider != null;
+    }
+
+    public void MultiplyMoveSpeed(float multiplier)
+    {
+        _moveSpeedMultiplier *= multiplier;
     }
 }

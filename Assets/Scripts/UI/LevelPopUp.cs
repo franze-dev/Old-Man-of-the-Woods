@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -10,18 +11,70 @@ public class LevelPopUp : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _levelTextFg;
     [SerializeField] private TextMeshProUGUI _levelTextBg;
     [SerializeField] private float _bgScaleMultiplier = 3f;
+    private Vector3 _startBgScale;
+    private Coroutine _popupRoutine;
+    private LevelManager _levelManager;
 
     private void Awake()
     {
+        _startBgScale = _levelTextBg.transform.localScale;
         _levelTextBg.alpha = 0f;
         _levelTextFg.alpha = 0f;
+    }
+
+    private void Start()
+    {
+        ServiceProvider.TryGetService(out _levelManager);
         EventProvider.Subscribe<ILevelUpEvent>(OnLevelUp);
+        EventProvider.Subscribe<IActivateGameplayEvent>(OnActivateGameplay);
+        EventProvider.Subscribe<IPauseEvent>(OnPause);
+    }
+
+    private void OnActivateGameplay(IActivateGameplayEvent @event)
+    {
+        ShowLevel(_levelManager.CurrentLevel);
+    }
+
+    private void OnPause(IPauseEvent @event)
+    {
+        if (PauseManager.Paused)
+            return;
+
+        if (_popupRoutine != null)
+        {
+            StopCoroutine(_popupRoutine);
+            _popupRoutine = null;
+        }
+
+        _levelTextBg.alpha = 0f;
+        _levelTextFg.alpha = 0f;
+        _levelTextBg.transform.localScale = _startBgScale;
+    }
+
+    private void OnDestroy()
+    {
+        EventProvider.Unsubscribe<ILevelUpEvent>(OnLevelUp);
+        EventProvider.Unsubscribe<IPauseEvent>(OnPause);
+        EventProvider.Unsubscribe<IActivateGameplayEvent>(OnActivateGameplay);
     }
 
     private void OnLevelUp(ILevelUpEvent @event)
     {
-        SetLevel(@event.NewLevel);
-        StartCoroutine(LevelUpPopUpRoutine());
+        if (@event.NewLevel == 1)
+            ShowLevel(@event.NewLevel);
+    }
+
+    private void ShowLevel(int level)
+    {
+        SetLevel(level);
+
+        if (_popupRoutine != null)
+        {
+            StopCoroutine(_popupRoutine);
+            _popupRoutine = null;
+        }
+
+        _popupRoutine = StartCoroutine(LevelUpPopUpRoutine());
     }
 
     private IEnumerator LevelUpPopUpRoutine()

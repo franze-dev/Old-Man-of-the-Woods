@@ -13,9 +13,17 @@ public class Player : MonoBehaviour
     [SerializeField] private Color _invincibilityColor = new Color(1f, 1f, 1f, 0.5f);
     [SerializeField] private float _blinkInterval = 0.1f;
     [SerializeField] private Image _healthFill;
+    [SerializeField] private Vector3 _startPos = Vector3.zero;
+    [SerializeField] private bool _immortal = false;
     private float _invincibilityTimer = 0.0f;
     private Coroutine _invincibilityCoroutine;
     private EnemyManager _enemyManager;
+    private bool _canRevive = false;
+
+    private void Awake()
+    {
+        ServiceProvider.SetService(this);
+    }
 
     private void Start()
     {
@@ -28,9 +36,24 @@ public class Player : MonoBehaviour
         if (_healthFill == null)
             Debug.LogError("Health Fill Image is not assigned in the Player script.");
 
-        ServiceProvider.TryGetService<EnemyManager>(out _enemyManager);
+        ServiceProvider.TryGetService(out _enemyManager);
+        EventProvider.Subscribe<ILevelUpEvent>(OnLevelUp);
+
+        _startPos = transform.position;
 
         ResetHealth();
+    }
+
+    private void OnDestroy()
+    {
+        EventProvider.Unsubscribe<ILevelUpEvent>(OnLevelUp);
+    }
+
+    private void OnLevelUp(ILevelUpEvent @event)
+    {
+        _currentHealth = _maxHealth;
+        UpdateHealthBar();
+        transform.position = _startPos;
     }
 
     public void TakeDamage(int damage)
@@ -41,6 +64,9 @@ public class Player : MonoBehaviour
 
     private IEnumerator TakeDamageRoutine(int damage)
     {
+        if (_immortal)
+            yield break;
+
         _currentHealth -= damage;
         _currentHealth = Mathf.Clamp(_currentHealth, 0, _maxHealth);
         UpdateHealthBar();
@@ -107,7 +133,55 @@ public class Player : MonoBehaviour
 
     private void Die()
     {
-        EventTriggerer.Trigger<IPlayerDeathEvent>(new PlayerDeathEvent());
+        if (_canRevive)
+        {
+            _canRevive = false;
+
+            _currentHealth = Mathf.Max(1, _maxHealth / 2); // revive with half HP
+            UpdateHealthBar();
+            transform.position = _startPos;
+            return;
+        }
+        else
+            EventTriggerer.Trigger<IPlayerDeathEvent>(new PlayerDeathEvent());
+    }
+
+    public void AddMaxHealth(int amount)
+    {
+        _maxHealth += amount;
+        _currentHealth += amount;
+        UpdateHealthBar();
+    }
+
+    public void MultiplyMaxHealth(float mul)
+    {
+        int newMax = Mathf.RoundToInt(_maxHealth * mul);
+        int diff = newMax - _maxHealth;
+        _maxHealth = newMax;
+        _currentHealth += diff;
+        UpdateHealthBar();
+    }
+
+    public void AddHealthRegen(float hpPerSecond, float duration = -1f)
+    {
+        StartCoroutine(HealthRegenCoroutine(hpPerSecond, duration));
+    }
+
+    private IEnumerator HealthRegenCoroutine(float hpPerSecond, float duration)
+    {
+        float timer = 0f;
+        while (duration < 0f || timer < duration)
+        {
+            _currentHealth = Mathf.Min(_maxHealth, _currentHealth + Mathf.RoundToInt(hpPerSecond));
+            UpdateHealthBar();
+            timer += 1f;
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    public void GrantRevive()
+    {
+        _canRevive = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

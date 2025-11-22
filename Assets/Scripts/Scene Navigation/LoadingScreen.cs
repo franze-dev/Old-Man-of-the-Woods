@@ -21,6 +21,8 @@ public class LoadingScreen : MonoBehaviour
     private void OnDestroy()
     {
         ServiceProvider.SetService<LoadingScreen>(null);
+        EventProvider.Unsubscribe<ILoadEvent>(LoadBar);
+        EventProvider.Unsubscribe<ResetLoadEvent>(ResetBar);
     }
 
     private void LoadBar(ILoadEvent load)

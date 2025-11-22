@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,24 @@ public class EnemySide : MonoBehaviour
     private int _startCount;
     private Transform _parent;
     private GameObject _enemyPrefab;
+    private static bool _levelStarted = false;
+    private LevelManager _levelManager;
+
+    private void Start()
+    {
+        ServiceProvider.TryGetService(out _levelManager);
+        EventProvider.Subscribe<IActivateGameplayEvent>(OnActivateGameplay);
+    }
+
+    private void OnDestroy()
+    {
+        EventProvider.Unsubscribe<IActivateGameplayEvent>(OnActivateGameplay);
+    }
+
+    private void OnActivateGameplay(IActivateGameplayEvent @event)
+    {
+        Activate();
+    }
 
     public void Init(int count, Vector2 dir, Vector3 pos, Transform parent, GameObject enemyPrefab,
                      float cooldownMin, float cooldownMax)
@@ -52,15 +71,22 @@ public class EnemySide : MonoBehaviour
             if (enemy != null && !enemy.gameObject.activeSelf)
             {
                 enemy.gameObject.SetActive(true);
+
+                if (!_levelManager.TimerStarted)
+                    _levelManager.StartLevelTimer();
+
                 return;
             }
         }
     }
 
-    private void Reset()
+    public void Reset()
     {
         foreach (var enemy in _enemies)
         {
+            if (enemy == null)
+                continue;
+
             enemy.transform.position = _startPos;
             enemy.gameObject.SetActive(false);
         }

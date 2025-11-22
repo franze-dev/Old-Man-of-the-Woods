@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
@@ -9,15 +10,31 @@ public class EnemyManager : MonoBehaviour
     [SerializeField] private float _spawnCooldownMin;
     [SerializeField] private float _spawnCooldownMax;
     [SerializeField] private int _damage = 5;
+    [SerializeField] private int _levelDamageAdd = 10;
 
     private EnemySide _leftEnemies;
     private EnemySide _rightEnemies;
+    private float _damageMultiplier = 1f;
 
     public int Damage => _damage;
 
     private void Awake()
     {
         ServiceProvider.SetService(this);
+        EventProvider.Subscribe<ILevelUpEvent>(OnLevelUp);
+    }
+
+    private void OnDestroy()
+    {
+        EventProvider.Unsubscribe<LevelUpEvent>(OnLevelUp);
+    }
+    private void OnLevelUp(ILevelUpEvent @event)
+    {
+        _leftEnemies.Reset();
+        _rightEnemies.Reset();
+
+        if (@event.NewLevel > 1)
+            _damage += _levelDamageAdd;
     }
 
     private void Start()
@@ -44,5 +61,18 @@ public class EnemyManager : MonoBehaviour
 
         _leftEnemies.Activate();
         _rightEnemies.Activate();
+    }
+
+    public void MultiplyDamage(float multiplier)
+    {
+        _damageMultiplier *= multiplier;
+        _damage = Mathf.Max(0, Mathf.RoundToInt(_damage * _damageMultiplier));
+    }
+
+    public void MultiplySpawnCooldowns(float mul)
+    {
+        _spawnCooldownMultiplier *= mul;
+        _spawnCooldownMin *= mul;
+        _spawnCooldownMax *= mul;
     }
 }

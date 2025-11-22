@@ -10,14 +10,36 @@ public class MenuManager : MonoBehaviour
     public GameObject LogsMenuObject;
     public GameObject BackgroundObject;
     public GameObject LoseMenuObject;
+    public GameObject WinMenuObject;
+    public GameObject ShopMenuObject;
 
     public IMenuState CurrentState = null;
     public IMenuState PreviousState = null;
 
     private void Awake()
     {
-        ServiceProvider.SetService(this);
+        ServiceProvider.SetService(this, true);
         EventProvider.Subscribe<IPlayerDeathEvent>(OnPlayerDeath);
+        EventProvider.Subscribe<IWinGameEvent>(OnWinGame);
+        EventProvider.Subscribe<ILevelUpEvent>(OnLevelUp);
+    }
+
+    private void OnLevelUp(ILevelUpEvent @event)
+    {
+        if (@event.NewLevel > 1)
+            GoToMenu(new ShopState(@event.NewLevel));
+    }
+
+    private void OnDestroy()
+    {
+        EventProvider.Unsubscribe<IPlayerDeathEvent>(OnPlayerDeath);
+        EventProvider.Unsubscribe<IWinGameEvent>(OnWinGame);
+        EventProvider.Unsubscribe<ILevelUpEvent>(OnLevelUp);
+    }
+
+    private void OnWinGame(IWinGameEvent @event)
+    {
+        GoToMenu(new WinState());
     }
 
     private void OnPlayerDeath(IPlayerDeathEvent @event)
@@ -58,6 +80,8 @@ public class MenuManager : MonoBehaviour
         LogsMenuObject.SetActive(false);
         BackgroundObject.SetActive(false);
         LoseMenuObject.SetActive(false);
+        WinMenuObject.SetActive(false);
+        ShopMenuObject.SetActive(false);
     }
 
     public void ShowMenuObject(GameObject obj)
@@ -74,6 +98,15 @@ public class MenuManager : MonoBehaviour
         ServiceProvider.TryGetService<SceneFlowManager>(out var manager);
         manager.UnloadScene(GameplaySceneData.Index);
     }
+}
+
+public interface IWinGameEvent : IEvent
+{
+}
+
+public class WinGameEvent : IWinGameEvent
+{
+
 }
 
 public interface IMenuState
@@ -133,7 +166,42 @@ public class LoseState : IMenuState
     public void Enter(MenuManager manager)
     {
         MenuManager.ResetGame();
-
         manager.ShowMenuObject(manager.LoseMenuObject);
     }
+}
+
+public class WinState : IMenuState
+{
+    public void Enter(MenuManager manager)
+    {
+        MenuManager.ResetGame();
+        manager.ShowMenuObject(manager.WinMenuObject);
+    }
+}
+
+public class ShopState : IMenuState
+{
+    int _levelToOpen;
+
+    public ShopState(int levelToOpen)
+    {
+        _levelToOpen = levelToOpen;
+    }
+
+    public void Enter(MenuManager manager)
+    {
+        ServiceProvider.TryGetService(out ShopMenu shopMenu);
+        if (shopMenu != null)
+            shopMenu.OpenShop(_levelToOpen);
+        EventTriggerer.Trigger<IDeactivateGameplayEvent>(new DeactivateGameplayEvent());
+        manager.ShowMenuObject(manager.ShopMenuObject);
+    }
+}
+
+public class DeactivateGameplayEvent : IDeactivateGameplayEvent
+{
+}
+
+public interface IDeactivateGameplayEvent : IEvent
+{
 }

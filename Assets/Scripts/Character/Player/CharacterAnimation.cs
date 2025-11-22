@@ -68,4 +68,10 @@ public class CharacterAnimation : MonoBehaviour
     {
         _animator.SetBool("isDead", true);
     }
+
+    public void SetAttackAnimationSpeed(float speed)
+    {
+        if (_animator != null)
+            _animator.SetFloat("attackSpeedMultiplier", Mathf.Clamp(speed, 0.1f, 5f));
+    }
 }

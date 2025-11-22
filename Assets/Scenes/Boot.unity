@@ -218,7 +218,6 @@ GameObject:
   - component: {fileID: 1943844691}
   - component: {fileID: 1943844690}
   - component: {fileID: 1943844689}
-  - component: {fileID: 1943844688}
   m_Layer: 0
   m_Name: SceneLogic
   m_TagString: Untagged
@@ -226,19 +225,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 2147483647
   m_IsActive: 1
---- !u!114 &1943844688
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1943844687}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f92032c8105bda4797f67e0045994a8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _pauseInput: {fileID: 6441343691294660222, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!114 &1943844689
 MonoBehaviour:
   m_ObjectHideFlags: 0

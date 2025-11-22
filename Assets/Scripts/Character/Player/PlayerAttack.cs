@@ -14,6 +14,10 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private LayerMask _whatIsEnemies;
     [SerializeField] private float _damage = 25f;
 
+    private float _attackSpeedMultiplier = 1f;
+    private float _damageMultiplier = 1f;
+    private float _radiusAdditive = 0f;
+
     private List<Collider2D> _toDamage;
 
     private void Awake()
@@ -21,6 +25,11 @@ public class PlayerAttack : MonoBehaviour
         if (_playerAnimation == null)
             _playerAnimation = GetComponent<CharacterAnimation>();
 
+        _attackAction.action.started += OnAttack;
+    }
+
+    private void OnEnable()
+    {
         _attackAction.action.started += OnAttack;
     }
 
@@ -33,17 +42,20 @@ public class PlayerAttack : MonoBehaviour
     {
         bool isPlaying = _playerAnimation.IsPlaying("atk");
 
+        float cooldown = _startAttackValue / _attackSpeedMultiplier;
+
         if (_currentTime <= 0 && !isPlaying)
         {
             //_toDamage = Physics2D.OverlapCircleAll(_attackOrigin.position, _attackRadius, _whatIsEnemies).ToList();
-            _currentTime = _startAttackValue;
+            _currentTime = cooldown;
             _playerAnimation.TriggerAttack();
         }
     }
 
     public void Attack()
     {
-        _toDamage = Physics2D.OverlapCircleAll(_attackOrigin.position, _attackRadius, _whatIsEnemies).ToList();
+        float radius = _attackRadius + _radiusAdditive;
+        _toDamage = Physics2D.OverlapCircleAll(_attackOrigin.position, radius, _whatIsEnemies).ToList();
 
         foreach (var enemy in _toDamage)
         {
@@ -63,5 +75,22 @@ public class PlayerAttack : MonoBehaviour
         Gizmos.color = Color.red;
         if (_attackOrigin != null)
             Gizmos.DrawWireSphere(_attackOrigin.position, _attackRadius);
+    }
+
+    public void MultiplyAttackSpeed(float multiplier)
+    {
+        _attackSpeedMultiplier *= multiplier;
+        if (_playerAnimation != null)
+            _playerAnimation.SetAttackAnimationSpeed(_attackSpeedMultiplier);
+    }
+
+    public void MultiplyDamage(float multiplier)
+    {
+        _damageMultiplier *= multiplier;
+    }
+
+    public void AddAttackRadius(float additive)
+    {
+        _radiusAdditive += additive;
     }
 }

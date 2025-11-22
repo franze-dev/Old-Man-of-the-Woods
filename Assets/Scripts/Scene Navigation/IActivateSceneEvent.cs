@@ -6,12 +6,12 @@ public interface IActivateSceneEvent : IEvent
     bool UnloadPrevious { get; set; }
 }
 
-public class ActivateGameEvent : IActivateSceneEvent
+public class ActivateGameSceneEvent : IActivateSceneEvent
 {
     public int Index => GameplaySceneData.Index;
     public bool UnloadPrevious { get; set; }
 
-    public ActivateGameEvent(bool unloadPrevious = true)
+    public ActivateGameSceneEvent(bool unloadPrevious = true)
     {
         UnloadPrevious = unloadPrevious;
 

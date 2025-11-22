@@ -49,7 +49,8 @@ public class MenuButtonsManager : MonoBehaviour
     {
         if (manager.CurrentState is PauseState)
             EventTriggerer.Trigger<IPauseEvent>(new PauseEvent());
-        EventTriggerer.Trigger<IActivateSceneEvent>(new ActivateGameEvent(false));
+        EventTriggerer.Trigger<IActivateGameplayEvent>(new ActivateGameplayEvent());
+        EventTriggerer.Trigger<IActivateSceneEvent>(new ActivateGameSceneEvent(false));
     }
 
     public void ExitGame()
